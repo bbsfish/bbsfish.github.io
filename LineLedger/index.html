@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <base target="_top">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=100vw, initial-scale=1.0">
+  <title>データ登録</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/script.js"></script>
+</head>
+
+<body>
+  <header>
+    <div id="body-header">
+      <div class="hd-title">
+        <a href="/index.html">LINE金銭管理</a>
+      </div>
+      <div class="hd-moniter">
+        <p>情報登録</p>
+      </div>
+      <div class="hd-memu">
+        <nav>
+          <ul>
+            <li id="hd-memu-active"><a href="/index.html">登録</a></li>
+            <li><a href="/index.html">カード</a></li>
+            <li><a href="/index.html">記録</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div id="body-main">
+      <section>
+        <p class="hide" id="status-message">
+          <!-- ステータスメッセージ -->
+        </p>
+        <form class="basic-form" action="" method="post" name="cardUsage">
+          <div>
+            <!-- 支払金額 [利用金額] -->
+            <label>支払額<span class="values_check_holder" autocomplete="off" id="total_holder">0</span></label>
+            <input id="total" type="number" name="total" placeholder="支払金額">
+          </div>
+
+          <div>
+            <!-- 費目 [データ種別A] "A:B"で書き込み -->
+            <label>費目</label>
+            <select name="expense_item">
+              <option value="" disabled selected>費目</option>
+              <option value="食事費">食事費</option>
+              <option value="娯楽費">娯楽費</option>
+              <option value="交通費">交通費</option>
+              <option value="特別費">特別費</option>
+              <option value="医療費">医療費</option>
+              <option value="固定費">固定費</option>
+            </select>
+          </div>
+
+          <div>
+            <!-- コメント [データ種別B] "A:B"で書き込み -->
+            <label>コメント</label>
+            <input type="text" name="cmnt" autocomplete="off">
+            <p class="qi-list">
+              <span class="qi-item">食べ物</span>
+              <span class="qi-item">飲み物</span>
+              <span class="qi-item">酒</span>
+              <span class="qi-item">学業</span>
+              <span class="qi-item">プレゼント</span>
+            </p>
+          </div>
+
+          <div>
+            <!-- 日付 -->
+            <label>日付</label>
+            <div class="side-by-side">
+              <label class="default-chbx"><input class="default-chbx-checkbox" type="checkbox" name="date_today" id="chbx1" checked onclick="">今日</label>
+              <label class="default-chbx"><input class="default-chbx-checkbox" type="checkbox" name="date_yest" id="chbx2" onclick="">昨日</label>
+              <label class="default-chbx"><input class="default-chbx-checkbox" type="checkbox" name="date_manual" id="chbx3" onclick="">指定</label>
+            </div>
+            <input type="date" name="date" min="" max="">
+          </div>
+
+          <div>
+            <!-- 支払方法 -->
+            <label>支払方法</label>
+            <select name="payway">
+              <option disabled selected>支払方法</option>
+              <option value="現金">現金（現金・振込・プリペイド）</option>
+              <option value="オリコ">カード（オリコ）</option>
+              <option value="ニコス">カード（ニコス）</option>
+              <option value="エポス">カード（エポス）</option>
+            </select>
+          </div>
+
+          <!-- 隠し属性 -->
+          <input type="hidden" name="datatype" value="registration">
+
+          <hr>
+          <!-- 送信ボタン -->
+          <div class="side-by-side">
+            <!-- <input type="submit" id="form-submit" value="登録" name="send_btn"> -->
+            <button type="button" id="form-submit" name="submitButton">登録</button>
+            <!-- https://script.google.com/macros/s/AKfycbzW-_FvQq7ejNrPn2_B-45MKAmMO8tRm8NPpe3ZgI4/dev?access_key=default&command=select -->
+          </div>
+        </form>
+      </section>
+    </div>
+  </main>
+  <div id="body-footer"></div>
+  <script src="/CardUsage.js"></script>
+  <script>
+    const fm = window.document.forms["cardUsage"];
+    const statusBox = document.getElementById("status-message");
+
+    fm.submitButton.addEventListener("click", (event) => {
+        Appearance.hideIt(statusBox);
+
+        // check
+        let consents = [];
+        if (fm.date_manual.checked == true && !fm.date.value) {
+            window.confirm("[ERR] 不足: 日付(date)");
+            return false;
+        }
+        if (fm.payway.selectedIndex == 0) {
+            consents[consents.length] = "支払方法 が 選択されていません";
+        }
+        if (!fm.total.value) {
+            window.confirm("[ERR] 不足: 支払額");
+            return false;
+        }
+        if (!fm.expense_item.value) {
+            consents[consents.length] = "費目 が 選択されていません";
+        }
+
+        let text = "[ 入力確認 ]\n";
+        for (let c of consents) {
+            text += "- " + c;
+        }
+        text += "\n[OK]を押すと実行します";
+        if (window.confirm(text)) {
+            const request = new CardUsage();
+            let datename = "";
+            // console.log(fm.date_today.checked, fm.date_yest.checked, fm.date_manual.checked)
+            if (fm.date_today.checked) {
+                datename = "today";
+            } else if (fm.date_yest.checked) {
+                datename = "yesterday";
+            } else { // fm.date_manual.checked
+                datename = fm.date.value;
+            }
+            request.prepareData({
+                total: fm.total.value, // 利用金額
+                expense_a: fm.expense_item.value, // 費目 [データ種別A]
+                expense_b: fm.cmnt.value, // コメント [データ種別B]
+                datename: datename, // 利用日 = today | yesterday | YYYY-MM-DD
+                payway: fm.payway.options[fm.payway.selectedIndex].value // 支払方法
+            });
+            
+            request.post(
+                (res) => {
+                    statusBox.innerText = "完了";
+                    Appearance.showIt(statusBox);
+                }, 
+                (err) => {
+                    statusBox.innerText = "登録に失敗しました";
+                    Appearance.showIt(statusBox);
+                }
+            );
+        }
+
+    });
+
+    fm.total.addEventListener("blur", (event) => {
+        document.getElementById("total_holder").innerText = Number(fm.total.value).toLocaleString();
+    });
+
+    // form-registration : input[name=date] . min & max - values set
+    {
+        let today = new Date();
+        let dateMin = new Date();
+        dateMin.setMonth(today.getMonth() - 3);
+        let dateMax = new Date();
+        dateMax.setMonth(today.getMonth() + 4);
+        fm.date.min = `${dateMin.getFullYear()}-${zeroPad(dateMin.getMonth() + 1)}-${zeroPad(dateMax.getDate())}`;
+        fm.date.max = `${dateMax.getFullYear()}-${zeroPad(dateMax.getMonth() + 1)}-${zeroPad(dateMax.getDate())}`;
+    }
+    
+    // comment item picker
+    {
+        document.querySelectorAll(".qi-item").forEach(item => {
+            item.addEventListener("click", function () {
+                fm.cmnt.value += item.innerText;
+            });
+        });
+    }
+
+    function chbx(obj) {
+        // form-registration : input[type=checkbox] - Exclusive check function
+        let that = obj;
+        if (document.getElementById(that.id).checked == true) {
+            let boxes = document.querySelectorAll('input[type="checkbox"]');
+
+            for (let i = 0; i < boxes.length; i++) {
+                boxes[i].checked = false;
+            }
+            document.getElementById(that.id).checked = true;
+        } else {
+            document.getElementById("chbx1").checked = true;
+        }
+    }
+  </script>
+</body>
+
+</html>

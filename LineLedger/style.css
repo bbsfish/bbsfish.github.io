@@ -1,0 +1,317 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: content-box;
+    zoom: 1;
+    font-size: 20px;
+}
+
+/* Variable */
+:root {
+    /* Base */
+    --f: rgb(231, 224, 224);
+    /* Font Color */
+    --b: rgb(49, 49, 49);
+    --b2: rgb(66, 66, 66);
+    /* Back Ground Color */
+    --t: rgb(114, 49, 49);
+    /* Thema/Acsent Color */
+    --t-line: rgb(6, 199, 85);
+    /* Thema/Acsent Color (iOS LINE) */
+}
+
+/* Resets */
+p,
+a,
+a:visited,
+h1,
+h2,
+h3,
+h4,
+h5,
+label,
+li,
+th,
+td {
+    color: var(--f);
+    font-weight: 100;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+    text-align: center;
+}
+
+li {
+    list-style: none;
+}
+
+hr {
+    margin: 12px 0;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+/* 一般 */
+.hide {
+    opacity: 0;
+    visibility: hidden;
+    transition: 1s;
+}
+
+.show {
+    opacity: 1;
+    visibility: visible;
+    transition: 1s;
+}
+
+/* body, header, footer */
+
+body {
+    background-color: var(--b);
+}
+
+#body-header,
+#body-main,
+#body-footer {
+    width: 100%;
+    max-width: 500px;
+}
+
+#body-footer {
+    min-height: 300px;
+}
+
+#body-header {
+    background-color: var(--b2);
+}
+
+#body-header>div {
+    text-align: center;
+}
+
+.hd-title,
+.hd-title * {
+    color: var(--t);
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.hd-moniter {
+    border-bottom: 1px solid var(--f);
+}
+
+/* ヘッダーメニュー */
+.hd-memu {
+    border-bottom: 1px solid var(--t);
+    padding-top: 6px;
+}
+
+.hd-memu ul {
+    display: flex;
+    padding: 0 15px;
+}
+
+.hd-memu ul li {
+    display: inline-block;
+    border-left: 1px solid var(--t);
+    border-right: 1px solid var(--t);
+    text-align: center;
+}
+
+.hd-memu ul li:first-child {
+    border-left: 0px;
+}
+
+.hd-memu ul li:last-child {
+    border-right: 0px;
+}
+
+.hd-memu ul li {
+    flex: auto;
+}
+
+.hd-memu ul li a {
+    display: block;
+}
+
+#hd-memu-active {
+    background-color: var(--t);
+}
+
+/* ヘッダーメニュー #2 */
+.hd-memu-2 {
+    border-bottom: 1px solid var(--f);
+}
+
+.hd-memu-2 ul {
+    display: flex;
+    padding: 0 15px;
+}
+
+
+.hd-memu-2 ul li {
+    flex: auto;
+}
+
+.hd-memu-2 ul li a {
+    display: block;
+}
+
+
+#hd-memu-2-active {
+    border-bottom: 6px solid var(--t);
+}
+
+/* Main */
+#status-message {
+    text-align: center;
+    color: red;
+    border-bottom: 1px  solid white;
+    height: 30px;
+    margin: 6px 0;
+}
+
+#body-main section {
+    width: 95%;
+    margin: 0 auto;
+}
+
+#body-main div {
+    padding: 12px 0;
+}
+
+form.basic-form>div {
+    text-align: center;
+}
+
+form.basic-form label {
+    display: block;
+}
+
+.default-chbx {
+    display: inline-block;
+}
+
+.default-chbx-checkbox {
+    transform: scale(2);
+    margin: 0 9px 0 5px;
+}
+
+.values_check_holder::before {
+    content: " [\0a5";
+}
+
+.values_check_holder::after {
+    content: "]";
+}
+
+form.basic-form input:not([type=checkbox]),
+form.basic-form #form-submit,
+form.basic-form select {
+    width: 200px;
+}
+
+
+.qi-list {
+    position: relative;
+    /* アイテムを横スクロールするには以下のコメントアウトを除去 */
+    /* overflow-x: scroll; */
+    overflow-y: hidden;
+    height: 27px;
+    width: 100%;
+    overflow-wrap: unset;
+    white-space: nowrap;
+    padding: 10px 0 25px 0;
+    scrollbar-width: 5px;
+}
+
+.qi-item {
+    font-size: smaller;
+    border: 1px solid var(--f);
+    border-radius: 6px;
+    margin: 0 5px;
+    padding: 0px 5px;
+    display: inline-block;
+}
+
+.qi-item:hover {
+    cursor: pointer;
+}
+
+
+input,
+select {
+    border: 0;
+    padding: 4px 12px;
+}
+
+.side-by-side {
+    display: flex;
+    justify-content: space-around;
+}
+
+/* Table */
+
+.table-style {
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
+
+.table-style ul {
+    margin-left: auto;
+    margin-right: auto;
+    width: 300px;
+}
+
+.table-style ul li {
+    display: flex;
+    justify-content: space-between;
+}
+
+.table-style ul li:first-child,
+.table-style ul li:last-child {
+    border-bottom: 2px solid white;
+}
+
+.table-style span {
+    display: inline-block;
+    width: 150px;
+}
+
+.table-style ul li>span:first-child {
+    text-align: left;
+}
+
+.table-style ul li>span:last-child {
+    text-align: right;
+    font-weight: light;
+}
+
+
+.cell-n,
+.cell-n,
+.cell-y,
+.cell-y {
+    text-align: left;
+}
+
+.cell-y::before,
+.cell-y::before {
+    text-align: left;
+    content: "\0a5";
+    margin-right: 5px;
+}
+
+.scroll-area {
+    width: 100%;
+    overflow-x: scroll;
+}
