@@ -22,13 +22,12 @@ function getprm(key, url) {
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
-const Appearance = {
-    hideIt: (element) => {
-        element.classList.remove("show");
-        element.classList.add("hide");
-    },
-    showIt: (element) => {
-        element.classList.remove("hide");
-        element.classList.add("show");
-    }
-}
+window.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementsByTagName("form")[0];
+
+    const list = [...form.elements].map(element => {
+        return element.name;
+    });
+
+    console.log("list of form parts", list);
+});

@@ -8,7 +8,6 @@
   <meta name="viewport" content="width=100vw, initial-scale=1.0">
   <title>データ登録</title>
   <link rel="stylesheet" href="style.css">
-  <script src="script.js"></script>
 </head>
 
 <body>
@@ -38,7 +37,7 @@
         <p class="hide" id="status-message">
           <!-- ステータスメッセージ -->
         </p>
-        <form class="basic-form" action="" method="post" name="cardUsage">
+        <form class="basic-form" id="myform">
           <div>
             <!-- 支払金額 [利用金額] -->
             <label>支払額<span class="values_check_holder" autocomplete="off" id="total_holder">0</span></label>
@@ -76,9 +75,9 @@
             <!-- 日付 -->
             <label>日付</label>
             <div class="side-by-side">
-              <label class="default-chbx"><input class="default-chbx-checkbox" type="checkbox" name="date_today" id="chbx1" checked onclick="">今日</label>
-              <label class="default-chbx"><input class="default-chbx-checkbox" type="checkbox" name="date_yest" id="chbx2" onclick="">昨日</label>
-              <label class="default-chbx"><input class="default-chbx-checkbox" type="checkbox" name="date_manual" id="chbx3" onclick="">指定</label>
+              <label class="default-chbx"><input class="default-chbx-checkbox" type="checkbox" name="date_today" id="chbx1" checked onclick="chbx(this)">今日</label>
+              <label class="default-chbx"><input class="default-chbx-checkbox" type="checkbox" name="date_yest" id="chbx2" onclick="chbx(this)">昨日</label>
+              <label class="default-chbx"><input class="default-chbx-checkbox" type="checkbox" name="date_manual" id="chbx3" onclick="chbx(this)">指定</label>
             </div>
             <input type="date" name="date" min="" max="">
           </div>
@@ -109,75 +108,90 @@
     </div>
   </main>
   <div id="body-footer"></div>
-  <script src="CardUsage.js"></script>
-  <script>
-    const fm = window.document.forms["cardUsage"];
-    const statusBox = document.getElementById("status-message");
 
-    fm.submitButton.addEventListener("click", (event) => {
-        Appearance.hideIt(statusBox);
+  <script src="status-box.js" inline></script>
+  <script src="script.js"></script>
+  <script src="cardusage.js" inline></script>
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+
+      const fm = window.document.getElementById("myform");
+      const submitflag = 0;
+
+      function formSubmit (){
+        if (submitflag > 0) { return console.log("this form has already submitted."); }
+
+        statusBox.hide();
 
         // check
         let consents = [];
-        if (fm.date_manual.checked == true && !fm.date.value) {
+        try {
+          if (fm.date_manual.checked == true && !fm.date.value) {
             window.confirm("[ERR] 不足: 日付(date)");
-            return false;
-        }
-        if (fm.payway.selectedIndex == 0) {
-            consents[consents.length] = "支払方法 が 選択されていません";
-        }
-        if (!fm.total.value) {
-            window.confirm("[ERR] 不足: 支払額");
-            return false;
-        }
-        if (!fm.expense_item.value) {
-            consents[consents.length] = "費目 が 選択されていません";
+            throw null;
+          }
+          if (fm.payway.selectedIndex == 0) {
+              consents[consents.length] = "支払方法 が 選択されていません";
+          }
+          if (!fm.total.value) {
+              window.confirm("[ERR] 不足: 支払額");
+              throw null;
+          }
+          if (!fm.expense_item.value) {
+              consents[consents.length] = "費目 が 選択されていません";
+          }          
+        } catch (e) {
+          submitflag = 0;
+          return;
         }
 
         let text = "[ 入力確認 ]\n";
         for (let c of consents) {
-            text += "- " + c;
+          text += "- " + c;
         }
         text += "\n[OK]を押すと実行します";
         if (window.confirm(text)) {
-            const request = new CardUsage();
-            let datename = "";
-            // console.log(fm.date_today.checked, fm.date_yest.checked, fm.date_manual.checked)
-            if (fm.date_today.checked) {
-                datename = "today";
-            } else if (fm.date_yest.checked) {
-                datename = "yesterday";
-            } else { // fm.date_manual.checked
-                datename = fm.date.value;
-            }
-            request.prepareData({
-                total: fm.total.value, // 利用金額
-                expense_a: fm.expense_item.value, // 費目 [データ種別A]
-                expense_b: fm.cmnt.value, // コメント [データ種別B]
-                datename: datename, // 利用日 = today | yesterday | YYYY-MM-DD
-                payway: fm.payway.options[fm.payway.selectedIndex].value // 支払方法
-            });
+          let datename = "";
+          // console.log(fm.date_today.checked, fm.date_yest.checked, fm.date_manual.checked)
+          if (fm.date_today.checked) {
+              datename = "today";
+          } else if (fm.date_yest.checked) {
+              datename = "yesterday";
+          } else { // fm.date_manual.checked
+              datename = fm.date.value;
+          }
+
+          app.putData({
+            total: fm.total.value, // 利用金額
+            expense_a: fm.expense_item.value, // 費目 [データ種別A]
+            expense_b: fm.cmnt.value, // コメント [データ種別B]
+            datename: datename, // 利用日 = today | yesterday | YYYY-MM-DD
+            payway: fm.payway.options[fm.payway.selectedIndex].value // 支払方法
+          });
             
-            request.post(
-                (res) => {
-                    statusBox.innerText = "完了";
-                    Appearance.showIt(statusBox);
-                }, 
-                (err) => {
-                    statusBox.innerText = "登録に失敗しました";
-                    Appearance.showIt(statusBox);
-                }
-            );
+          app.request(
+            () => {
+              statusBox.showMessage("完了");
+              fm.reset();
+            },
+            () => {
+              statusBox.showMessage("登録に失敗しました")
+            }
+          );
+        } else {
+          submitflag = 0;
+          return;
         }
+      }
 
-    });
+      fm.submitButton.addEventListener("click", formSubmit);
 
-    fm.total.addEventListener("blur", (event) => {
+      fm.total.addEventListener("input", (event) => {
         document.getElementById("total_holder").innerText = Number(fm.total.value).toLocaleString();
-    });
+      });
 
-    // form-registration : input[name=date] . min & max - values set
-    {
+      // form-registration : input[name=date] . min & max - values set
+      {
         let today = new Date();
         let dateMin = new Date();
         dateMin.setMonth(today.getMonth() - 3);
@@ -185,30 +199,33 @@
         dateMax.setMonth(today.getMonth() + 4);
         fm.date.min = `${dateMin.getFullYear()}-${zeroPad(dateMin.getMonth() + 1)}-${zeroPad(dateMax.getDate())}`;
         fm.date.max = `${dateMax.getFullYear()}-${zeroPad(dateMax.getMonth() + 1)}-${zeroPad(dateMax.getDate())}`;
-    }
+      }
     
-    // comment item picker
-    {
+      // comment item picker
+      {
         document.querySelectorAll(".qi-item").forEach(item => {
             item.addEventListener("click", function () {
                 fm.cmnt.value += item.innerText;
             });
         });
-    }
+      }
+
+      
+    }); // DOMContentLoaded
 
     function chbx(obj) {
-        // form-registration : input[type=checkbox] - Exclusive check function
-        let that = obj;
-        if (document.getElementById(that.id).checked == true) {
-            let boxes = document.querySelectorAll('input[type="checkbox"]');
+      // form-registration : input[type=checkbox] - Exclusive check function
+      let that = obj;
+      if (document.getElementById(that.id).checked == true) {
+          let boxes = document.querySelectorAll('input[type="checkbox"]');
 
-            for (let i = 0; i < boxes.length; i++) {
-                boxes[i].checked = false;
-            }
-            document.getElementById(that.id).checked = true;
-        } else {
-            document.getElementById("chbx1").checked = true;
-        }
+          for (let i = 0; i < boxes.length; i++) {
+              boxes[i].checked = false;
+          }
+          document.getElementById(that.id).checked = true;
+      } else {
+          document.getElementById("chbx1").checked = true;
+      }
     }
   </script>
 </body>
