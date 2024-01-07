@@ -1,5 +1,3 @@
-const TOLCLSTR_LOCALES = "ja-JP"
-const TOLCLSTR_OPTIONS = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }
 
 const app = {
     data: {},
@@ -41,7 +39,7 @@ app.putData = function ({
     }
     console.log("app.data update", app.data);
 }
-
+// https://script.google.com/macros/s/AKfycbxJxIQdVcJu5IG4_uvmy0gRNaLeCtTn79WklEYZCcjLfGaUJT39EQU4QyjzK3p26AtY/exec?access_key=dev&year=2024&month=1
 app.request = async function (onSuccess = ()=>{}, onError = ()=>{}){
     const params = new URLSearchParams();
     params.append("access_key", "Yl1zS0QkY67UxSaV6EzkhRaLJpsCZaw_")
@@ -78,40 +76,6 @@ const getDateByName = (name, dateObject = new Date()) => {
     }
 }
 
-// const Cu = new CardUsage({foo: "foo1", bar: "bar1"});
-// Cu.post()
-
-
-
-// (async () => {
-//     const data = {}
-//     data.method = 'POST'
-//     data.headers = {
-//         'Accept': 'application/json',
-//         'Content-Type': 'application/x-www-form-urlencoded',
-//     }
-//     const params = new URLSearchParams();
-//     const obj = {
-//         id: "id0000001",
-//         update: "",
-//         date: "",
-//         value: 0,
-//         shop: "",
-//         data_type: "",
-//         expense_for: "",
-//         comment: "",
-//         gnlc_symbol: "T",
-//         written: "1"
-//     }
-//     // params.append('access_key', "Yl1zS0QkY67UxSaV6EzkhRaLJpsCZaw_")
-//     // params.append('access_key', "dev")
-//     params.append('targetrow', JSON.stringify(obj))
-//     data.body = params;
-//     const res = await fetch("https://script.google.com/macros/s/AKfycbxJxIQdVcJu5IG4_uvmy0gRNaLeCtTn79WklEYZCcjLfGaUJT39EQU4QyjzK3p26AtY/exec", data).catch(e=>console.error(e))
-//     const json = await res.json()
-//     console.log(json)
-// })();
-
 window.addEventListener("DOMContentLoaded", () => {
     app.onload();
-})
+});

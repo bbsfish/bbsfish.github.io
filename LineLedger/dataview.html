@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <base target="_top">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=100vw, initial-scale=1.0">
+  <title>記録表示</title>
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    button {
+      width: 100px;
+    }
+    select {
+      width: 150px;
+    }
+    #viewerArea {
+      overflow-x: scroll;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      white-space: nowrap;
+    }
+    table * {
+      font-size: 12px;
+    }
+    table th {
+      font-weight: bold;
+      background-color: black;
+    }
+    table th, table td {
+      border-right: 1px solid white;
+      border-left: 1px solid white;
+      padding: 6px 12px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header id="header-id-1"></header>
+
+  <main>
+    <div id="body-main">
+      <section>
+        <p class="hide" id="status-message">
+          <!-- ステータスメッセージ -->
+        </p>
+
+        <form id="myform">
+          <div>
+            <select name="search_year">
+              <option value="2024">2024</option>
+              <option value="2023">2023</option>
+              <option value="2022">2022</option>
+              <option value="2021">2021</option>
+              <option value="2020">2020</option>
+            </select>
+            <select name="search_month">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
+            </select>
+          <button type="button" name="goSearch">検索</button>
+          </div>
+          <hr>
+          <select name="sortby">
+            <option disabled selected>Sort by</option>
+            <option value="date">date</option>
+            <option value="value">value</option>
+            <option value="shop">shop</option>
+            <option value="data_type">data_type</option>
+            <option value="expense_for">expense_for</option>
+            <option value="comment">comment</option>
+            <option value="gnlc_symbol">gnlc_symbol</option>
+            <option value="date_serial">date_serial</option>
+          </select>
+          <div id="viewerArea"></div>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div id="body-footer"></div>
+  </footer>
+
+  <script src="status-box.js" inline></script>
+  <script src="script.js"></script>
+  <script src="dataview.js" inline></script>
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      const viewer = {
+        target: document.querySelector("#viewerArea")
+      }
+
+      viewer.clear = function (){
+        viewer.target.innerHTML = "";
+      }
+
+      viewer.show = function (dataArray){
+        viewer.clear();
+        const table = document.createElement("table");
+        const dataObjectKeys = ["date", "value", "shop", "data_type", "expense_for", "comment", "gnlc_symbol", "date_serial"];
+
+        const tr = document.createElement("tr");
+        dataObjectKeys.forEach(key => {
+          const th = document.createElement("th");
+          th.innerText = key;
+          tr.appendChild(th);
+        });
+        table.appendChild(tr);
+        
+        dataArray.forEach(row => {
+          const tr = document.createElement("tr");
+          const tdList = dataObjectKeys.forEach(key => {
+            let innerText = row[key];
+            if (key == "date") {
+              innerText = new Date(innerText).toLocaleDateString(TOLCLSTR_LOCALES, TOLCLSTR_OPTIONS);
+            }
+            if (key == "value") {
+              innerText = innerText.toLocaleString();
+            }
+            const td = document.createElement("td");
+            td.innerText = innerText;
+            tr.appendChild(td);
+          });
+          table.appendChild(tr);
+        });
+        viewer.target.appendChild(table);
+      }
+
+      const fm = window.document.getElementById("myform");
+
+      const dt = new Date();
+      const y= dt.getFullYear();
+      const m = dt.getMonth()+1;
+      for (const opt of fm.search_year.options) {
+        if (y == Number(opt.value)) { opt.selected = true; }
+      }
+      i = 0;
+      for (const opt of fm.search_month.options) {
+        if (m == Number(opt.value)) { opt.selected = true; }
+      }
+
+      fm.goSearch.addEventListener("click", async (e) => {
+        console.log("go search");
+        const y = fm.search_year;
+        const m = fm.search_month;
+        const data = await app.request({
+          month: m.options[m.selectedIndex].value,
+          year: y.options[y.selectedIndex].value
+        });
+        console.log(data);
+        viewer.show(data)
+      });
+
+      fm.sortby.addEventListener("change", async (e) => {
+        const option = e.target.options[e.target.selectedIndex].value;
+        console.log("data sort by", option);
+      });
+
+    }); // DOMContentLoaded
+  </script>
+</body>
+
+</html>

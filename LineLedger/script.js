@@ -8,6 +8,9 @@
 //     document.body.style.webkitTransform = "scale(" + scale + ") translate(" + transX + "px, " + transY + "px)";
 // });
 
+const TOLCLSTR_LOCALES = "ja-JP"
+const TOLCLSTR_OPTIONS = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }
+
 function zeroPad(num, len = 2) {
     return (Array(len).join('0') + num).slice(-len);
 }
@@ -22,7 +25,27 @@ function getprm(key, url) {
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
+async function loadHeader (){
+    const hd = document.querySelector("header");
+    const id = (function (){
+        const arr = hd.id.split("-");
+        return arr[arr.length-1];
+    })();
+
+    try {
+        const response = await fetch("./_header.html");
+        const text = await response.text();
+        hd.innerHTML = text;
+        const list = hd.querySelectorAll(".js-header-activate-list");
+        list[id].id = "hd-memu-active";
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 window.addEventListener("DOMContentLoaded", () => {
+    loadHeader();
+
     const form = document.getElementsByTagName("form")[0];
 
     const list = [...form.elements].map(element => {

@@ -11,25 +11,8 @@
 </head>
 
 <body>
-  <header>
-    <div id="body-header">
-      <div class="hd-title">
-        <a href="index.html">LINE金銭管理</a>
-      </div>
-      <div class="hd-moniter">
-        <p>情報登録</p>
-      </div>
-      <div class="hd-memu">
-        <nav>
-          <ul>
-            <li id="hd-memu-active"><a href="index.html">登録</a></li>
-            <!-- <li><a href="index.html">カード</a></li> -->
-            <!-- <li><a href="index.html">記録</a></li> -->
-          </ul>
-        </nav>
-      </div>
-    </div>
-  </header>
+
+  <header id="header-id-0"></header>
 
   <main>
     <div id="body-main">
@@ -107,7 +90,10 @@
       </section>
     </div>
   </main>
-  <div id="body-footer"></div>
+  
+  <footer>
+    <div id="body-footer"></div>
+  </footer>
 
   <script src="status-box.js" inline></script>
   <script src="script.js"></script>
@@ -154,11 +140,11 @@
           let datename = "";
           // console.log(fm.date_today.checked, fm.date_yest.checked, fm.date_manual.checked)
           if (fm.date_today.checked) {
-              datename = "today";
+            datename = "today";
           } else if (fm.date_yest.checked) {
-              datename = "yesterday";
+            datename = "yesterday";
           } else { // fm.date_manual.checked
-              datename = fm.date.value;
+            datename = fm.date.value;
           }
 
           app.putData({
@@ -168,7 +154,7 @@
             datename: datename, // 利用日 = today | yesterday | YYYY-MM-DD
             payway: fm.payway.options[fm.payway.selectedIndex].value // 支払方法
           });
-            
+          
           app.request(
             () => {
               statusBox.showMessage("完了");
@@ -217,14 +203,14 @@
       // form-registration : input[type=checkbox] - Exclusive check function
       let that = obj;
       if (document.getElementById(that.id).checked == true) {
-          let boxes = document.querySelectorAll('input[type="checkbox"]');
+        let boxes = document.querySelectorAll('input[type="checkbox"]');
 
-          for (let i = 0; i < boxes.length; i++) {
-              boxes[i].checked = false;
-          }
-          document.getElementById(that.id).checked = true;
+        for (let i = 0; i < boxes.length; i++) {
+            boxes[i].checked = false;
+        }
+        document.getElementById(that.id).checked = true;
       } else {
-          document.getElementById("chbx1").checked = true;
+        document.getElementById("chbx1").checked = true;
       }
     }
   </script>
